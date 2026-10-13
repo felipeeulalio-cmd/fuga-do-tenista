@@ -73,6 +73,14 @@ canvas#tela{position:absolute;inset:0;width:100%;height:100%;display:block;touch
 .aviso{font-size:12px;color:#6d5f4a;margin-top:6px}
 .apostas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
 .apostas .btn{min-width:0;font-size:15px;padding:10px 4px}
+.niveis{display:flex;flex-direction:column;gap:10px;width:100%;max-width:400px}
+.nivel{display:grid;grid-template-columns:52px 1fr auto;align-items:center;gap:10px;text-align:left;border:3px solid #fff;border-radius:18px;padding:10px 12px;color:#fff;cursor:pointer;font-family:var(--corpo);box-shadow:0 5px 0 rgba(0,0,0,.35)}
+.nivel:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.nivel .emo{font-size:34px;line-height:1;text-align:center}
+.nivel strong{display:block;font-family:var(--display);font-size:15px;letter-spacing:.02em;text-shadow:0 2px 0 rgba(0,0,0,.3)}
+.nivel small{display:block;font-size:12.5px;font-weight:700;opacity:.95;margin-top:2px}
+.nivel .vid{font-size:12px;font-weight:900;margin-top:3px;letter-spacing:1px}
+.nivel .mult{font-family:var(--display);font-size:22px;background:#fff;color:#14102a;border-radius:12px;padding:6px 9px;transform:rotate(4deg)}
 .jogos{display:flex;flex-direction:column;gap:8px}
 .jogo{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;border:3px solid #221a10;border-radius:12px;background:#fff;padding:9px 11px;font:700 14px var(--corpo);color:#221a10;cursor:pointer}
 .jogo small{display:block;font-weight:500;font-size:12px;color:#6d5f4a}
@@ -101,7 +109,7 @@ canvas#tela{position:absolute;inset:0;width:100%;height:100%;display:block;touch
       <button class="btn-hud" id="btnPausa" aria-label="Pausar">II</button>
     </div>
     <div class="hud-linha">
-      <div class="hud-vidas" id="hudVidas">♥♥♥</div>
+      <div class="hud-vidas" id="hudVidas">♥♥♥♥♥</div>
       <div style="flex:1"></div>
       <div class="hud-pontos" id="hudPontos">0</div>
     </div>
@@ -120,7 +128,7 @@ canvas#tela{position:absolute;inset:0;width:100%;height:100%;display:block;touch
   <section class="tela transparente" id="telaInicio">
     <div style="flex:1;min-height:36vh"></div>
     <h1 class="titulo">A FUGA DO AMIGO TENISTA<small>A última missão do solteiro</small></h1>
-    <p class="sub">Seis fases. Mil tentações. Um ídolo para encontrar.</p>
+    <p class="sub">Quatro fases. Mil tentações. Um ídolo para encontrar.</p>
     <div class="pilha">
       <button class="btn" id="btnJogar">JOGAR AGORA</button>
       <button class="btn sec" id="btnComo">COMO JOGAR</button>
@@ -141,17 +149,27 @@ canvas#tela{position:absolute;inset:0;width:100%;height:100%;display:block;touch
     </div>
   </section>
 
+  <!-- Escolha de nível -->
+  <section class="tela" id="telaNivel" hidden>
+    <h1 class="titulo" style="font-size:clamp(28px,8.5vw,40px)">ESCOLHA SEU NÍVEL</h1>
+    <p class="sub">Quanto mais difícil, mais pontos no ranking!</p>
+    <div class="niveis" id="listaNiveis"></div>
+  </section>
+
   <!-- Como jogar -->
   <section class="tela" id="telaComo" hidden>
     <div class="cartao">
       <h2>Como jogar</h2>
+      <p><b>✅ PEGUE</b> (brilham em verde): 🎾 bolas de tênis, 🏆 troféus, 🪙 fichas e 💚 vida extra.</p>
+      <p><b>❌ FUJA</b> do resto. Cada perigo tem uma <b>placa vermelha</b> dizendo o que fazer:</p>
+      <p><b>PULE ▲</b> · <b>ABAIXE ▼</b> · <b>DESVIE ◀▶</b></p>
       <ul>
         <li><b>Deslize</b> para os lados para trocar de faixa.</li>
         <li><b>Deslize para cima</b> (ou toque na tela) para pular coisas baixas.</li>
         <li><b>Deslize para baixo</b> para abaixar de convites voando.</li>
         <li>Gente e paredões no caminho: <b>troque de faixa</b>.</li>
         <li>Pegue <b>bolas de tênis</b>, <b>troféus</b> e <b>fichas</b>.</li>
-        <li>Na fase 6, aperte <b>RAQUETADA</b> para devolver bolas gigantes.</li>
+        <li>Na última fase, aperte <b>RAQUETADA</b> para devolver bolas gigantes.</li>
         <li>No computador: setas, espaço para pular, X para raquetada, P para pausar.</li>
       </ul>
       <p class="aviso">Tudo aqui é brincadeira e fictício. As fichas são virtuais: não valem dinheiro.</p>
@@ -174,6 +192,12 @@ canvas#tela{position:absolute;inset:0;width:100%;height:100%;display:block;touch
     <span class="selo" id="faseNumero">FASE 1</span>
     <h1 class="titulo" id="faseTitulo" style="font-size:clamp(28px,9vw,44px)">A NOITE DAS TENTAÇÕES</h1>
     <p class="sub" id="faseDica"></p>
+    <div class="cartao">
+      <p><b>✅ PEGUE:</b> 🎾 bolas · 🏆 troféus · 🪙 fichas · 💚 vida</p>
+      <p><b>❌ FUJA:</b> <span id="faseFugir"></span></p>
+      <p style="margin:0">Siga a <b>placa vermelha</b>: <b>PULE ▲</b>, <b>ABAIXE ▼</b> ou <b>DESVIE ◀▶</b>.</p>
+    </div>
+    <button class="btn" id="btnComecarFase">COMEÇAR!</button>
   </section>
 
   <!-- Fim de fase + pista do ídolo -->
@@ -271,12 +295,10 @@ const RANKING_URL   = "";   // URL /exec do Apps Script (vazio = ranking só no 
 
 // Pistas mostradas ao final de cada fase (edite à vontade)
 const PISTAS_DO_IDOLO = [
-  "Pista 1: um segurança na saída da festa jurou que o ídolo já está na cidade. Chegou cedo e foi dormir cedo.",
-  "Pista 2: alguém viu uma faixa verde e amarela balançando no fim da avenida. O ídolo está perto!",
-  "Pista 3: o garçom contou que o ídolo passou no bar e pediu… só um copo d'água. Foco total.",
-  "Pista 4: o ídolo não ficou para o casamento. Disse que tinha um compromisso mais importante: te esperar.",
-  "Pista 5: o ídolo não aposta. Decide na raça. Ele está na quadra central, aquecendo o braço.",
-  "Pista 6: holofotes acesos, torcida em pé. A quadra central está pronta. O ídolo chegou!"
+  "Pista 1: um segurança na saída da festa jurou que o ídolo já está na cidade. Chegou cedo, tomou só água e foi dormir cedo.",
+  "Pista 2: o ídolo não ficou para o casamento. Saiu de faixa verde e amarela dizendo que tinha compromisso mais importante: te esperar.",
+  "Pista 3: o ídolo não aposta. Decide na raça. Ele está na quadra central, aquecendo o braço.",
+  "Pista 4: holofotes acesos, torcida em pé. A quadra central está pronta. O ídolo chegou!"
 ];
 
 /* Imagens da caricatura (corpos + cabeças estilizadas a partir das fotos).
@@ -299,31 +321,36 @@ const CABECA_ANCORA = {
 };
 
 /* ================== DADOS DAS FASES ================== */
+let VIDAS_MAX = 5;
+/* Níveis de dificuldade: quanto mais difícil, mais pontos no ranking */
+const NIVEIS = [
+  { id:"tio", emoji:"🍖", nome:"TIO DO CHURRASCO", frase:"Corre devagar, mas não larga o espetinho.", mult:1, vidas:6, vel:0.85, dupla:0, cor:"#22c55e" },
+  { id:"fds", emoji:"🎾", nome:"TENISTA DE FIM DE SEMANA", frase:"Joga sábado, reclama do joelho no domingo.", mult:1.5, vidas:5, vel:1, dupla:0.05, cor:"#3b82f6" },
+  { id:"supoe", emoji:"🤔", nome:"DANIEL SUPÕE QUE AGUENTA", frase:"Ele supõe que é fácil. Ele supõe errado.", mult:2, vidas:4, vel:1.18, dupla:0.15, cor:"#f59e0b" },
+  { id:"raiz", emoji:"🔥", nome:"SOLTEIRO RAIZ", frase:"Modo lenda. Nenhum convite resiste.", mult:3, vidas:3, vel:1.35, dupla:0.3, cor:"#ef4444" }
+];
+let NIVEL = NIVEIS[1];
 const FASES = [
-  { nome:"A NOITE DAS TENTAÇÕES", dica:"Desvie dos convites e dos amigos chamando pra beber.",
-    distancia:900, vel:19, intervalo:14, tema:"festa",
-    obst:["convite","amigo","garrafa","copo","amigo","convite"],
-    msgs:["Você veio jogar tênis ou perder a linha?","Convite recebido. Juízo não encontrado!","O grupo dos solteiros está chamando!","PERIGO: o rolê está ficando interessante!"] },
-  { nome:"OPERAÇÃO FOCO NA MISSÃO", dica:"Corações, notificações e amigos cupidos. Mantenha o foco!",
-    distancia:950, vel:23, intervalo:12, tema:"avenida",
-    obst:["coracao","celular","cupido","coracao","convite"],
-    msgs:["Você tem uma missão, campeão!","Notificação suspeita detectada!","Seu foco está sendo testado!","Raquete na mão, juízo na cabeça!"] },
-  { nome:"O CAMINHO DAS BEBIDAS", dica:"Pule as mesas, fuja do garçom da 'saideira'.",
-    distancia:1000, vel:25, intervalo:11.5, tema:"bar",
-    obst:["mesa","copo","garcom","garrafa","mesa"],
-    msgs:["Era só uma cervejinha…","Você disse que ia jogar tênis amanhã!","A quadra está esperando, campeão!","Bônus: você resistiu ao último convite!"] },
-  { nome:"O CASAMENTO FINAL", dica:"O padre está atrás de você com a aliança. NÃO PARE!",
-    distancia:1050, vel:26, intervalo:11, tema:"casamento",
-    obst:["alianca","buque","noiva","conviteCasamento","alianca"],
+  { nome:"A NOITE DAS TENTAÇÕES", dica:"Festa, bebida e amigos chamando. Siga as placas vermelhas!",
+    fugir:"💌 convites · 🍾 garrafas · 🍺 copos · 🪑 mesas · 🙋 amigos chamando",
+    distancia:650, vel:16, intervalo:17, tema:"festa", dupla:0,
+    obst:["garrafa","convite","amigo","copo","mesa","garcom","convite","garrafa"],
+    msgs:["Você veio jogar tênis ou perder a linha?","Convite recebido. Juízo não encontrado!","O grupo dos solteiros está chamando!","Era só uma cervejinha…","A quadra está esperando, campeão!"] },
+  { nome:"O CASAMENTO FINAL", dica:"O padre vem atrás com a aliança. Pegue troféus para afastá-lo!",
+    fugir:"💍 alianças · 💐 buquê · 👰 noiva · 💌 convite de casamento",
+    distancia:650, vel:18, intervalo:16, tema:"casamento", dupla:0.1,
+    obst:["alianca","buque","noiva","conviteCasamento","alianca","coracao"],
     msgs:["ALERTA! ESTÃO FALANDO EM CASAMENTO!","A palavra 'para sempre' foi detectada!","Corra! O buffet já está reservado!","O juiz está perguntando se você aceita!","NÃO OLHE PARA O ALTAR!"] },
-  { nome:"APOSTAS ESPORTIVAS DAS DECISÕES", dica:"Junte fichas virtuais. No fim: apostar ou sair fora?",
-    distancia:900, vel:26, intervalo:11, tema:"cassino",
+  { nome:"APOSTAS ESPORTIVAS", dica:"Pegue fichas 🪙. No fim: apostar ou sair fora?",
+    fugir:"📺 telões · 🎫 bilhetes · ⚽ bolas de futebol · 🗣️ apostador",
+    distancia:650, vel:19, intervalo:15, tema:"cassino", dupla:0.15,
     obst:["telao","bilhete","bolaFutebol","apostador","placa","bolaFutebol"],
-    msgs:["Você veio apostar ou só olhar as odds?","O seu saldo está pedindo socorro!","A casa sempre ganha… menos quando o código decide o contrário!","SAIA AGORA E PRESERVE SEUS PONTOS!","Odd 1.01 não é dinheiro na mão!","Múltipla de 12 jogos? Melhor ir treinar!"] },
-  { nome:"O GRAND SLAM DAS BOLAS", dica:"Use a RAQUETADA nas bolas gigantes. No fim: 30s de sobrevivência!",
-    distancia:800, vel:27, intervalo:10, tema:"quadra", sobrevivencia:30,
-    obst:["bolaGigante","bolinha","raqueteVoadora","rede","bolaGigante","bolinha"],
-    msgs:["MATCH POINT, CAMPEÃO!","ACE! Você destruiu o saque!","BOLA FORA! Mas continua correndo!","O juiz de cadeira pediu silêncio… pra você correr!","Só falta uma partida para encontrar seu ídolo!"] }
+    msgs:["Você veio apostar ou só olhar as odds?","O seu saldo está pedindo socorro!","Odd 1.01 não é dinheiro na mão!","Múltipla de 12 jogos? Melhor ir treinar!"] },
+  { nome:"O GRAND SLAM DAS BOLAS", dica:"Bola GIGANTE: aperte RAQUETADA ou desvie. No fim, aguente 20 segundos!",
+    fugir:"🟡 bolas gigantes · 🎾 bolinhas quicando · 🏸 raquetes voando · 🥅 redes",
+    distancia:550, vel:19, intervalo:15, tema:"quadra", sobrevivencia:20, dupla:0.15,
+    obst:["bolaGigante","bolinha","raqueteVoadora","rede","bolaGigante"],
+    msgs:["MATCH POINT, CAMPEÃO!","ACE! Você destruiu o saque!","BOLA FORA! Mas continua correndo!","Só falta essa para encontrar seu ídolo!"] }
 ];
 
 /* Tipos de obstáculo:
@@ -491,6 +518,7 @@ const Ranking = {
       if (r.nome && estado.nome && String(r.nome).toLowerCase() === estado.nome.toLowerCase()) tr.className = "eu";
       const a = document.createElement("td"); a.textContent = (i + 1) + "º";
       const b = document.createElement("td"); b.textContent = String(r.nome) + (r.venceu === true || r.venceu === "SIM" ? " 🏆" : "");
+      if (r.nivel){ const nv = document.createElement("small"); nv.style.cssText = "display:block;font-size:11px;color:#6d5f4a"; nv.textContent = String(r.nivel); b.appendChild(nv); }
       const c = document.createElement("td"); c.textContent = Number(r.pontos).toLocaleString("pt-BR");
       tr.append(a, b, c); tb.appendChild(tr);
     });
@@ -501,7 +529,7 @@ const Ranking = {
 /* ================== ESTADO DO JOGO ================== */
 const estado = {
   tela:"inicio", pausado:false, nome: ler("fuga_nome", ""),
-  fase:0, pontos:0, pontosInicioFase:0, fichas:0, fichasInicioFase:0, vidas:3,
+  fase:0, pontos:0, pontosInicioFase:0, fichas:0, fichasInicioFase:0, vidas:5,
   recorde: ler("fuga_recorde", 0),
   dist:0, vel:20, tempo:0, sobrevivencia:0, emSobrevivencia:false,
   obst:[], itens:[], part:[], textos:[], acumSpawn:0, proxMsg:4,
@@ -526,8 +554,8 @@ function acao(nome){
   if (nome === "esq" && jog.faixa > -1){ jog.faixa--; jog.inclina = -1; Som.efeito("lado"); }
   if (nome === "dir" && jog.faixa < 1){ jog.faixa++; jog.inclina = 1; Som.efeito("lado"); }
   if (nome === "pular" && jog.alt <= 0.5){ jog.vy = 820; jog.abaixado = 0; Som.efeito("pulo"); poeira(8); }
-  if (nome === "baixo"){ if (jog.alt > 0) jog.vy = -1200; jog.abaixado = 0.65; Som.efeito("abaixa"); }
-  if (nome === "raquete" && jog.raquete <= 0){ jog.raquete = 0.38; Som.efeito("raquete"); }
+  if (nome === "baixo"){ if (jog.alt > 0) jog.vy = -1200; jog.abaixado = 0.95; Som.efeito("abaixa"); }
+  if (nome === "raquete" && jog.raquete <= 0){ jog.raquete = 0.55; Som.efeito("raquete"); }
 }
 document.querySelectorAll("[data-acao]").forEach(b => {
   const n = b.dataset.acao;
@@ -566,7 +594,7 @@ document.addEventListener("visibilitychange", () => { if (document.hidden && est
 document.addEventListener("touchmove", e => { if (e.target === cv || e.target.closest(".ctl")) e.preventDefault(); }, { passive:false });
 
 /* ================== TELAS ================== */
-const TELAS = ["telaInicio","telaNome","telaComo","telaRanking","telaFase","telaPista","telaCassino","telaAposta","telaPausa","telaDerrota","telaFinal"];
+const TELAS = ["telaInicio","telaNome","telaNivel","telaComo","telaRanking","telaFase","telaPista","telaCassino","telaAposta","telaPausa","telaDerrota","telaFinal"];
 let telaAnterior = "telaInicio";
 function mostrar(id){ TELAS.forEach(t => $(t).hidden = t !== id); }
 function jogoVisivel(v){ $("hud").hidden = !v; $("controles").hidden = !v; $("btnRaquete").hidden = !(v && FASES[estado.fase] && FASES[estado.fase].tema === "quadra"); }
@@ -581,18 +609,36 @@ $("formNome").addEventListener("submit", e => {
   e.preventDefault();
   const n = $("campoNome").value.replace(/[<>]/g, "").trim().slice(0, 20);
   if (!n){ $("campoNome").placeholder = "Digite um nome para o ranking"; $("campoNome").focus(); return; }
-  estado.nome = n; salvar("fuga_nome", n); novoJogo();
+  estado.nome = n; salvar("fuga_nome", n); abrirNiveis();
 });
 $("btnPausa").onclick = alternarPausa;
 $("btnRetomar").onclick = alternarPausa;
 $("btnReiniciarFase").onclick = () => { estado.pausado = false; tentarFase(); };
 $("btnMenu").onclick = irMenu;
 $("btnTentarFase").onclick = tentarFase;
-$("btnRecomecar").onclick = novoJogo;
-$("btnDeNovo").onclick = novoJogo;
+$("btnRecomecar").onclick = abrirNiveis;
+$("btnDeNovo").onclick = abrirNiveis;
 $("btnContinuar").onclick = () => iniciarFase(estado.fase + 1);
 $("btnCompartilhar").onclick = compartilhar;
 
+function abrirNiveis(){
+  const box = $("listaNiveis"); box.innerHTML = "";
+  NIVEIS.forEach(nv => {
+    const b = document.createElement("button"); b.className = "nivel"; b.type = "button";
+    b.style.background = "linear-gradient(135deg," + nv.cor + ", rgba(0,0,0,.35))";
+    const e = document.createElement("span"); e.className = "emo"; e.textContent = nv.emoji;
+    const m = document.createElement("span");
+    const st = document.createElement("strong"); st.textContent = nv.nome;
+    const sm = document.createElement("small"); sm.textContent = nv.frase;
+    const vd = document.createElement("span"); vd.className = "vid"; vd.textContent = "♥".repeat(nv.vidas) + "  ·  velocidade " + (nv.vel < 0.95 ? "tranquila" : nv.vel < 1.1 ? "normal" : nv.vel < 1.3 ? "rápida" : "insana");
+    m.append(st, sm, vd);
+    const x = document.createElement("span"); x.className = "mult"; x.textContent = "x" + String(nv.mult).replace(".", ",");
+    b.append(e, m, x);
+    b.onclick = () => { NIVEL = nv; VIDAS_MAX = nv.vidas; salvar("fuga_nivel", nv.id); Som.efeito("trofeu"); novoJogo(); };
+    box.appendChild(b);
+  });
+  mostrar("telaNivel");
+}
 function irMenu(){ estado.pausado = false; estado.tela = "inicio"; Som.pararMusica(); jogoVisivel(false); mostrar("telaInicio"); }
 function alternarPausa(){
   if (estado.tela !== "jogando") return;
@@ -600,13 +646,14 @@ function alternarPausa(){
   if (estado.pausado) mostrar("telaPausa"); else { mostrar(null); ultimo = performance.now(); }
 }
 
+function ganhar(v){ estado.pontos += v * (NIVEL ? NIVEL.mult : 1); }
 /* ================== FLUXO DO JOGO ================== */
 function novoJogo(){
-  estado.pontos = 0; estado.fichas = 0; estado.vidas = 3; estado.final = null;
+  estado.pontos = 0; estado.fichas = 0; estado.vidas = VIDAS_MAX; estado.final = null;
   iniciarFase(0);
 }
 function tentarFase(){
-  estado.pontos = estado.pontosInicioFase; estado.fichas = estado.fichasInicioFase; estado.vidas = 3;
+  estado.pontos = estado.pontosInicioFase; estado.fichas = estado.fichasInicioFase; estado.vidas = VIDAS_MAX;
   iniciarFase(estado.fase);
 }
 function iniciarFase(i){
@@ -617,18 +664,18 @@ function iniciarFase(i){
   estado.acumSpawn = 0; estado.proxMsg = 3; estado.perseguidor = 0.15; estado.fimFase = false;
   estado.emSobrevivencia = false; estado.sobrevivencia = f.sobrevivencia || 0; estado.pausado = false;
   Object.assign(jog, { faixa:0, x:0, alt:0, vy:0, abaixado:0, raquete:0, invuln:1.2, dano:0, inclina:0, morto:false });
-  $("faseNumero").textContent = "FASE " + (i + 1) + " DE 6";
-  $("faseTitulo").textContent = f.nome; $("faseDica").textContent = f.dica;
+  $("faseNumero").textContent = "FASE " + (i + 1) + " DE " + FASES.length;
+  $("faseTitulo").textContent = f.nome; $("faseDica").textContent = f.dica; $("faseFugir").textContent = f.fugir;
   estado.tela = "intro"; jogoVisivel(false); mostrar("telaFase");
   Som.tocarMusica(f.tema);
-  setTimeout(() => { if (estado.tela === "intro" && estado.fase === i){ estado.tela = "jogando"; mostrar(null); jogoVisivel(true); ultimo = performance.now(); } }, 2300);
+  $("btnComecarFase").onclick = () => { if (estado.tela === "intro" && estado.fase === i){ Som.iniciar(); estado.tela = "jogando"; mostrar(null); jogoVisivel(true); jog.invuln = 1.5; ultimo = performance.now(); } };
   atualizarHUD();
 }
 function concluirFase(){
   if (estado.fimFase) return;
   estado.fimFase = true; Som.efeito("fase");
   const bonus = 1000 + estado.vidas * 250;
-  estado.pontos += bonus;
+  ganhar(bonus);
   texto("FASE CONCLUÍDA!", LW/2, LH*0.4, "#d9f23a", 34);
   jog.comemora = 1.6;
   setTimeout(() => {
@@ -651,7 +698,7 @@ function mostrarPista(bonus, extra){
 }
 function perderVida(tipo){
   if (jog.invuln > 0 || jog.morto) return;
-  estado.vidas--; jog.invuln = 1.6; jog.dano = 0.6; Som.efeito("dano");
+  estado.vidas--; jog.invuln = 2.2; jog.dano = 0.6; Som.efeito("dano");
   tremer = 0.35; estrelas(18);
   texto(FRASES_HIT[tipo] || "AI!", LW/2, LH*0.42, "#ff6b6b", 24);
   if (estado.vidas <= 0) morrer();
@@ -672,7 +719,7 @@ function morrer(){
 }
 function registro(venceu){
   let ap = ler("fuga_aparelho", ""); if (!ap){ ap = Math.random().toString(36).slice(2, 10); salvar("fuga_aparelho", ap); }
-  return { nome:estado.nome || "Anônimo", pontos:Math.floor(estado.pontos), fase:estado.fase + 1, venceu, aparelho:ap, data:new Date().toISOString() };
+  return { nome:(estado.nome || "Anônimo"), nivel:NIVEL.emoji + " " + NIVEL.nome, pontos:Math.floor(estado.pontos), fase:estado.fase + 1, venceu, aparelho:ap, data:new Date().toISOString() };
 }
 
 /* ================== CASSINO ================== */
@@ -690,7 +737,7 @@ function abrirCassino(bonus){
   mostrar("telaCassino");
 }
 $("portaB").onclick = () => {
-  const extra = 500; estado.pontos += extra + estado.fichas * 10;
+  const extra = 500; ganhar(extra + estado.fichas * 10);
   const msg = "Decisão inteligente: guardou as fichas! (+" + extra + " e fichas convertidas: +" + (estado.fichas * 10) + ")";
   estado.fichas = 0; Som.efeito("trofeu"); mostrarPista(estado.bonusFase, msg);
 };
@@ -749,22 +796,22 @@ document.querySelectorAll("[data-aposta]").forEach(btn => btn.onclick = () => {
   }, 150);
 });
 $("btnSairCassino").onclick = () => {
-  const conv = estado.fichas * 10; estado.pontos += conv;
+  const conv = estado.fichas * 10; ganhar(conv);
   const msg = "Fichas convertidas: +" + conv + " pontos"; estado.fichas = 0;
   mostrarPista(estado.bonusFase, msg);
 };
 
 /* ================== FINAL ================== */
-const FRASES_FINAIS = ["ELE CONSEGUIU! SOBREVIVEU ÀS FESTAS, AO CASAMENTO E ÀS BOLAS DE TÊNIS!","SEIS FASES, MIL TENTAÇÕES E UMA ÚNICA MISSÃO!","A RAQUETE VENCEU. O FOCO SOBREVIVEU. O ÍDOLO CHEGOU!","CAMPEÃO DO GRAND SLAM DAS TENTAÇÕES!"];
+const FRASES_FINAIS = ["ELE CONSEGUIU! SOBREVIVEU ÀS FESTAS, AO CASAMENTO E ÀS BOLAS DE TÊNIS!","QUATRO FASES, MIL TENTAÇÕES E UMA ÚNICA MISSÃO!","A RAQUETE VENCEU. O FOCO SOBREVIVEU. O ÍDOLO CHEGOU!","CAMPEÃO DO GRAND SLAM DAS TENTAÇÕES!"];
 function iniciarFinal(){
-  estado.pontos += 5000; estado.tela = "final"; jogoVisivel(false); mostrar(null);
+  ganhar(5000); estado.tela = "final"; jogoVisivel(false); mostrar(null);
   estado.final = { t:0, mostrou:false }; estado.part = [];
   Som.tocarMusica("final"); Som.efeito("vitoria");
   estado.recorde = Math.max(estado.recorde, Math.floor(estado.pontos)); salvar("fuga_recorde", estado.recorde);
   Ranking.enviar(registro(true));
 }
 async function compartilhar(){
-  const txt = estado.nome + " venceu A FUGA DO AMIGO TENISTA com " + Math.floor(estado.pontos).toLocaleString("pt-BR") + " pontos! Duvido você passar do casamento: " + location.href;
+  const txt = estado.nome + " venceu A FUGA DO AMIGO TENISTA no nível " + NIVEL.emoji + " " + NIVEL.nome + " com " + Math.floor(estado.pontos).toLocaleString("pt-BR") + " pontos! Duvido você passar do casamento: " + location.href;
   try{ if (navigator.share){ await navigator.share({ title:"A Fuga do Amigo Tenista", text:txt }); return; } }catch(e){}
   try{ await navigator.clipboard.writeText(txt); $("btnCompartilhar").textContent = "TEXTO COPIADO! COLE NO GRUPO"; }
   catch(e){ $("btnCompartilhar").textContent = "COPIE O LINK DA PÁGINA"; }
@@ -774,7 +821,7 @@ async function compartilhar(){
 function gerarLinha(){
   const f = FASES[estado.fase];
   const faixas = [-1, 0, 1].sort(() => Math.random() - .5);
-  const qtd = Math.random() < (0.35 + estado.fase * 0.06 + (estado.emSobrevivencia ? 0.2 : 0)) ? 2 : 1;
+  const qtd = Math.random() < ((f.dupla || 0) + NIVEL.dupla + (estado.emSobrevivencia ? 0.15 : 0)) ? 2 : 1;
   for (let k = 0; k < qtd; k++){
     const tipo = escolha(f.obst), def = TIPOS[tipo];
     const o = { tipo, t:def.t, d:62, faixa:faixas[k], fx:faixas[k], fase:Math.random()*6, hit:false, rebatido:false };
@@ -789,6 +836,8 @@ function gerarLinha(){
     for (let j = 0; j < 3; j++) estado.itens.push({ tipo, d:62 + j * 3.2, faixa:livre, ar:false, pego:false });
   } else if (r < 0.62){
     estado.itens.push({ tipo:"trofeu", d:62, faixa:livre, ar:true, pego:false });
+  } else if (r < 0.72 && estado.vidas < VIDAS_MAX){
+    estado.itens.push({ tipo:"vida", d:62, faixa:livre, ar:false, pego:false });
   }
 }
 
@@ -825,19 +874,19 @@ function atualizar(dt){
   if (jog.morto) return;
 
   // velocidade e distância
-  const extraSob = estado.emSobrevivencia ? (f.sobrevivencia - estado.sobrevivencia) * 0.35 : 0;
-  estado.vel = f.vel + estado.dist / f.distancia * 5 + extraSob;
+  const extraSob = estado.emSobrevivencia ? (f.sobrevivencia - estado.sobrevivencia) * 0.2 : 0;
+  estado.vel = (f.vel + estado.dist / f.distancia * 3 + extraSob) * NIVEL.vel;
   const passo = estado.vel * dt;
   if (!estado.fimFase){
     if (!estado.emSobrevivencia) estado.dist += passo;
-    estado.pontos += passo * 1.2;
+    ganhar(passo * 1.2);
   }
 
   // fim da fase / sobrevivência
   if (!estado.fimFase && estado.dist >= f.distancia){
     if (f.sobrevivencia && !estado.emSobrevivencia){
       estado.emSobrevivencia = true; estado.dist = f.distancia;
-      texto("30 SEGUNDOS DE SOBREVIVÊNCIA!", LW/2, LH*0.42, "#d9f23a", 22); Som.efeito("trofeu");
+      texto(f.sobrevivencia + " SEGUNDOS DE SOBREVIVÊNCIA!", LW/2, LH*0.42, "#d9f23a", 22); Som.efeito("trofeu");
     } else if (!f.sobrevivencia){ concluirFase(); }
   }
   if (estado.emSobrevivencia && !estado.fimFase){
@@ -848,7 +897,7 @@ function atualizar(dt){
   // spawn
   if (!estado.fimFase && (estado.dist < f.distancia - 40 || estado.emSobrevivencia)){
     estado.acumSpawn += passo;
-    const intervalo = estado.emSobrevivencia ? Math.max(6.5, f.intervalo - 3.5) : f.intervalo - estado.dist / f.distancia * 2;
+    const intervalo = estado.emSobrevivencia ? Math.max(10, f.intervalo - 3) : f.intervalo - estado.dist / f.distancia * 1.5;
     if (estado.acumSpawn >= intervalo){ estado.acumSpawn = 0; gerarLinha(); }
   }
 
@@ -858,7 +907,7 @@ function atualizar(dt){
 
   // perseguidor do casamento
   if (f.tema === "casamento" && !estado.fimFase){
-    estado.perseguidor = clamp(estado.perseguidor + dt * 0.018, 0, 1);
+    estado.perseguidor = clamp(estado.perseguidor + dt * 0.011, 0, 1);
     if (estado.perseguidor >= 1){ estado.perseguidor = 0.35; perderVida("alianca"); texto("O PADRE TE ALCANÇOU!", LW/2, LH*0.5, "#ff6b6b", 22); }
     if (Math.random() < dt * 1.5) texto(escolha(["ACEITA!","ACEITA! ACEITA!","SIM!!!"]), aleat(70, LW-70), horizonte() + aleat(10, 60), "#ffd6e8", 15);
   }
@@ -871,18 +920,18 @@ function atualizar(dt){
     else if (o.rebatido){ o.d += passo * 3.2; continue; }
     else o.fx = o.faixa;
     // rebater bola gigante
-    if (TIPOS[o.tipo].rebate && !o.rebatido && jog.raquete > 0 && o.d < 7 && o.d > -0.5 && Math.abs(o.fx - jog.x) < 0.6){
-      o.rebatido = true; estado.pontos += 150; Som.efeito("bola");
+    if (TIPOS[o.tipo].rebate && !o.rebatido && jog.raquete > 0 && o.d < 10 && o.d > -1 && Math.abs(o.fx - jog.x) < 0.6){
+      o.rebatido = true; ganhar(150); Som.efeito("bola");
       texto(escolha(["ACE! +150","DEVOLVEU! +150","WINNER! +150"]), LW/2, LH*0.48, "#d9f23a", 26);
       const p = proj(o.d, o.fx); confete(p.x, p.y - 40, 20, ["#d9f23a","#fff"]); continue;
     }
-    if (!o.hit && Math.abs(o.d) < 1.1 && Math.abs(o.fx - jog.x) < 0.55){
+    if (!o.hit && Math.abs(o.d) < 0.9 && Math.abs(o.fx - jog.x) < 0.5){
       let seguro = false;
       const alturaObst = o.t === "baixo" && TIPOS[o.tipo].quica ? Math.abs(Math.sin(o.fase * 4)) * 60 : 0;
-      if (o.t === "baixo") seguro = jog.alt > 45 + alturaObst * 0.6;
+      if (o.t === "baixo") seguro = jog.alt > 28 + alturaObst * 0.4;
       if (o.t === "alto") seguro = jog.abaixado > 0;
       if (!seguro){ o.hit = true; perderVida(o.tipo); }
-      else if (!o.passou){ o.passou = true; estado.pontos += 25; }
+      else if (!o.passou){ o.passou = true; ganhar(25); }
     }
   }
   estado.obst = estado.obst.filter(o => o.d > -7 && o.d < 90);
@@ -890,12 +939,13 @@ function atualizar(dt){
   // itens
   for (const it of estado.itens){
     it.d -= passo;
-    if (!it.pego && Math.abs(it.d) < 1.2 && Math.abs(it.faixa - jog.x) < 0.55 && (!it.ar || jog.alt > 60)){
+    if (!it.pego && Math.abs(it.d) < 1.6 && Math.abs(it.faixa - jog.x) < 0.6 && (!it.ar || jog.alt > 40)){
       it.pego = true;
       const p = proj(0, jog.x);
-      if (it.tipo === "bola"){ estado.pontos += 50; Som.efeito("bola"); confete(p.x, p.y - 60, 6, ["#d9f23a"]); }
-      if (it.tipo === "ficha"){ estado.fichas += 1; estado.pontos += 10; Som.efeito("ficha"); confete(p.x, p.y - 60, 6, ["#ffd166"]); }
-      if (it.tipo === "trofeu"){ estado.pontos += 250; Som.efeito("trofeu"); texto("TROFÉU! +250", LW/2, LH*0.5, "#ffd166", 24); confete(p.x, p.y - 60, 24);
+      if (it.tipo === "bola"){ ganhar(50); Som.efeito("bola"); confete(p.x, p.y - 60, 6, ["#d9f23a"]); }
+      if (it.tipo === "ficha"){ estado.fichas += 1; ganhar(10); Som.efeito("ficha"); confete(p.x, p.y - 60, 6, ["#ffd166"]); }
+      if (it.tipo === "vida"){ estado.vidas = Math.min(VIDAS_MAX, estado.vidas + 1); Som.efeito("trofeu"); texto("+1 VIDA! 💚", LW/2, LH*0.5, "#7CFC9A", 26); confete(p.x, p.y - 60, 16, ["#7CFC9A","#fff"]); }
+      if (it.tipo === "trofeu"){ ganhar(250); Som.efeito("trofeu"); texto("TROFÉU! +250", LW/2, LH*0.5, "#ffd166", 24); confete(p.x, p.y - 60, 24);
         if (FASES[estado.fase].tema === "casamento") estado.perseguidor = Math.max(0, estado.perseguidor - 0.25); }
     }
   }
@@ -912,12 +962,12 @@ function atualizarHUD(){
   const f = FASES[estado.fase] || FASES[0];
   let prog = Math.min(1, estado.dist / f.distancia);
   if (f.sobrevivencia){ prog = estado.emSobrevivencia ? 0.7 + 0.3 * (1 - estado.sobrevivencia / f.sobrevivencia) : prog * 0.7; }
-  const fase = "FASE " + (estado.fase + 1) + " · " + f.nome + (estado.emSobrevivencia ? " · " + Math.ceil(estado.sobrevivencia) + "s" : "");
+  const fase = NIVEL.emoji + " FASE " + (estado.fase + 1) + " · " + f.nome + (estado.emSobrevivencia ? " · " + Math.ceil(estado.sobrevivencia) + "s" : "");
   const s = fase + "|" + Math.floor(estado.pontos) + "|" + estado.vidas + "|" + estado.fichas + "|" + Math.round(prog * 200);
   if (s === hudCache) return; hudCache = s;
   $("hudFase").textContent = fase;
   $("hudPontos").textContent = Math.floor(estado.pontos).toLocaleString("pt-BR");
-  $("hudVidas").textContent = "♥".repeat(Math.max(0, estado.vidas)) + "♡".repeat(Math.max(0, 3 - estado.vidas));
+  $("hudVidas").textContent = "♥".repeat(Math.max(0, estado.vidas)) + "♡".repeat(Math.max(0, VIDAS_MAX - estado.vidas));
   $("hudFichas").textContent = "🪙 " + estado.fichas;
   $("hudBarra").style.width = (prog * 100).toFixed(1) + "%";
 }
@@ -929,7 +979,7 @@ function atualizarFinal(dt){
   if (fi.t > 3.6 && !fi.mostrou){
     fi.mostrou = true;
     $("finalFrase").textContent = escolha(FRASES_FINAIS);
-    $("finalNome").textContent = NOME_DO_AMIGO + " encontrou " + NOME_DO_IDOLO.toLowerCase() + "! Jogador: " + estado.nome;
+    $("finalNome").textContent = NOME_DO_AMIGO + " encontrou " + NOME_DO_IDOLO.toLowerCase() + "! Jogador: " + estado.nome + " · Nível " + NIVEL.emoji + " " + NIVEL.nome + " (x" + String(NIVEL.mult).replace(".", ",") + ")";
     $("finalPontos").textContent = Math.floor(estado.pontos).toLocaleString("pt-BR");
     mostrar("telaFinal");
     setTimeout(() => Ranking.render("tabelaFinal"), 1200);
@@ -1054,7 +1104,7 @@ function personagem(x, y, s, corpo, pele, extra, t){
 }
 function desenharObst(o, t){
   const p = proj(o.d, o.fx); if (p.y < horizonte() - 4) return;
-  const s = p.s * 1.05, x = p.x, y = p.y;
+  const s = p.s * 1.3, x = p.x, y = p.y;
   // sombra
   ctx.fillStyle = "rgba(0,0,0,.25)"; ctx.beginPath(); ctx.ellipse(x, y, 46*s, 10*s, 0, 0, Math.PI*2); ctx.fill();
   const flut = -120 * s + Math.sin(o.fase * 3) * 6 * s; // altura de objetos "alto"
@@ -1103,11 +1153,29 @@ function desenharObst(o, t){
       for (let i = -54; i <= 54; i += 9){ ctx.beginPath(); ctx.moveTo(i, -50); ctx.lineTo(i, 0); ctx.stroke(); } for (let j = -50; j <= 0; j += 9){ ctx.beginPath(); ctx.moveTo(-54, j); ctx.lineTo(54, j); ctx.stroke(); } ctx.fillStyle = "#fff"; ctx.fillRect(-60, -58, 120, 7); break;
   }
   ctx.restore();
+  // placa didática: o que fazer
+  if (!o.hit && !o.rebatido && o.d < 48 && o.d > 0.5){
+    const acaoTxt = TIPOS[o.tipo].rebate ? "RAQUETADA ou DESVIE" : (o.t === "baixo" ? "PULE ▲" : (o.t === "alto" ? "ABAIXE ▼" : "DESVIE ◀▶"));
+    const topo = o.t === "baixo" ? y - 110*s : (o.t === "alto" ? y + flut - 75*s : y - 200*s);
+    const tam = Math.max(10, 16 * Math.min(1.2, p.s * 1.4));
+    ctx.save(); ctx.font = "900 " + tam + "px Rubik, sans-serif"; ctx.textAlign = "center";
+    const w = ctx.measureText(acaoTxt).width + tam;
+    ctx.globalAlpha = Math.min(1, (48 - o.d) / 10);
+    ctx.fillStyle = "#e11d48"; ctx.strokeStyle = "#fff"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.roundRect(x - w/2, topo - tam * 1.5, w, tam * 1.5, tam * 0.4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#fff"; ctx.fillText(acaoTxt, x, topo - tam * 0.42);
+    ctx.restore();
+  }
 }
 function desenharItem(it, t){
   const p = proj(it.d, it.faixa); if (p.y < horizonte()) return;
-  const s = p.s, y = p.y - (it.ar ? 130 : 34) * s + Math.sin(t * 5 + it.d) * 5 * s;
-  ctx.save(); ctx.translate(p.x, y); ctx.scale(s, s); contorno();
+  const s = p.s * 1.6, y = p.y - (it.ar ? 110 : 34) * s + Math.sin(t * 5 + it.d) * 5 * s;
+  ctx.save(); ctx.translate(p.x, y); ctx.scale(s, s);
+  // brilho verde = coisa boa
+  const gl = ctx.createRadialGradient(0, 0, 4, 0, 0, 34); gl.addColorStop(0, "rgba(124,252,154,.85)"); gl.addColorStop(1, "rgba(124,252,154,0)");
+  ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(0, 0, 34 + Math.sin(t * 8) * 3, 0, Math.PI*2); ctx.fill();
+  contorno();
+  if (it.tipo === "vida"){ ctx.fillStyle = "#22c55e"; ctx.beginPath(); ctx.moveTo(0, 16); ctx.bezierCurveTo(-34, -6, -18, -30, 0, -12); ctx.bezierCurveTo(18, -30, 34, -6, 0, 16); ctx.fill(); ctx.stroke(); rotulo("+1", 0, 2, 13, "#fff"); }
   if (it.tipo === "bola"){ ctx.fillStyle = "#d9f23a"; ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(-18, 0, 13, -0.8, 0.8); ctx.stroke(); ctx.beginPath(); ctx.arc(18, 0, 13, Math.PI-0.8, Math.PI+0.8); ctx.stroke(); }
   if (it.tipo === "ficha"){ ctx.scale(Math.abs(Math.sin(t*4 + it.d)) * 0.7 + 0.3, 1); ctx.fillStyle = "#ffd166"; ctx.beginPath(); ctx.arc(0, 0, 17, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.strokeStyle = "#b8860b"; ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.arc(0, 0, 11, 0, Math.PI*2); ctx.stroke(); ctx.setLineDash([]); }
   if (it.tipo === "trofeu") trofeu(0, 0, 1.1);
