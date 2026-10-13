@@ -997,7 +997,7 @@ function atualizarFinal(dt){
   const fi = estado.final; fi.t += dt;
   if (Math.random() < dt * 3) confete(aleat(40, LW-40), aleat(LH*0.1, LH*0.35), 30);
   if (Math.random() < dt * 8) estado.part.push({ x:aleat(0,LW), y:-5, vx:aleat(-30,30), vy:aleat(60,160), g:30, vida:5, cor:escolha(["#d9f23a","#ff4d6d","#4cc9f0","#ffd166","#00c853"]), r:aleat(2,4), quad:true, rot:0 });
-  if (fi.t > 3.6 && !fi.mostrou){
+  if (fi.t > 5.6 && !fi.mostrou){
     fi.mostrou = true;
     $("finalFrase").textContent = escolha(FRASES_FINAIS);
     $("finalNome").textContent = NOME_DO_AMIGO + " encontrou " + NOME_DO_IDOLO.toLowerCase() + "! Jogador: " + estado.nome + " · Nível " + NIVEL.emoji + " " + NIVEL.nome + " (x" + String(NIVEL.mult).replace(".", ",") + ")";
@@ -1325,7 +1325,7 @@ function desenharFinal(t){
   ctx.save(); ctx.beginPath(); ctx.roundRect(-32, -160, 64, 96, 14); ctx.clip();
   ctx.strokeStyle = "#00a651"; ctx.lineWidth = 12; ctx.beginPath(); ctx.moveTo(-34, -164); ctx.lineTo(34, -70); ctx.stroke();
   ctx.strokeStyle = "#ffd600"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(-34, -164); ctx.lineTo(34, -70); ctx.stroke(); ctx.restore();
-  const aceno = fi > 2.4 ? Math.sin(t * 8) * 0.5 : 0;
+  const aceno = fi > 2.4 && fi < 4.2 ? Math.sin(t * 8) * 0.5 : 0;
   ctx.strokeStyle = "#1c2440"; ctx.lineWidth = 14; ctx.lineCap = "round";
   ctx.beginPath(); ctx.moveTo(26, -148); ctx.lineTo(50 + Math.cos(-1.2 + aceno)*30, -190 + Math.sin(aceno)*10); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(-26, -148); ctx.lineTo(fi > 2.4 ? -60 : -40, fi > 2.4 ? -120 : -90); ctx.stroke();
@@ -1334,11 +1334,33 @@ function desenharFinal(t){
   rotulo("?", 0, -176, 30, "#ffd600");
   ctx.restore();
   rotulo(NOME_DO_IDOLO, ix, iy + 34, 18, "#ffd600");
-  // protagonista entra correndo e comemora
-  const hx = fi < 2.4 ? lerp(-60, LW * 0.36, Math.min(1, fi / 2.4)) : LW * 0.36;
-  desenharHeroi(hx, LH * 0.5, 1.05, fi < 2.4 ? "run" : "win", t);
-  if (fi >= 2.4){ trofeu(hx + 44, LH*0.5 - 150 - Math.abs(Math.sin(t*7))*16, 1.3); }
-  if (fi > 2.6) rotulo("UHUUL!", hx - 10, LH*0.5 - 205, 22, "#d9f23a");
+  // padre chorando no canto (o casamento não aconteceu)
+  personagem(LW * 0.12, LH * 0.53, 0.55, "#212121", "#f1c27d", () => {
+    ctx.fillStyle = "#fff"; ctx.fillRect(-6, -96, 12, 8);
+    ctx.fillStyle = "#f1c27d"; ctx.beginPath(); ctx.arc(0, -108, 10, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = "#1a1020"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, -100, 8, Math.PI*1.15, Math.PI*1.85); ctx.stroke();
+    ctx.strokeStyle = "#4cc9f0"; ctx.lineWidth = 4; ctx.lineCap = "round";
+    for (const lado of [-1, 1]){ const fase = (t * 3) % 1; ctx.beginPath(); ctx.moveTo(lado * 8, -116); ctx.quadraticCurveTo(lado * (24 + fase * 10), -100, lado * (30 + fase * 14), -70 + fase * 20); ctx.stroke(); }
+    ctx.lineWidth = 5; ctx.strokeStyle = "#ffca28"; ctx.beginPath(); ctx.arc(40, -96, 10, 0, Math.PI*2); ctx.stroke();
+  }, t * 0.3);
+  rotulo("BUÁÁÁ!", LW * 0.13, LH * 0.53 - 112, 14, "#7fd4ff"); rotulo("SEM CASAMENTO!", LW * 0.16, LH * 0.53 - 96, 10, "#7fd4ff");
+  // protagonista entra correndo, comemora e corre para o abraço
+  let hx;
+  if (fi < 2.4) hx = lerp(-60, LW * 0.36, fi / 2.4);
+  else if (fi < 3.4) hx = LW * 0.36;
+  else hx = lerp(LW * 0.36, ix - 68, Math.min(1, (fi - 3.4) / 0.8));
+  const abraco = fi >= 4.2;
+  desenharHeroi(hx, LH * 0.5, 1.05, fi < 2.4 ? "run" : "win", abraco ? t * 0.2 : t);
+  if (abraco){
+    // braço do ídolo envolvendo o Daniel
+    ctx.save(); ctx.strokeStyle = "#1c2440"; ctx.lineWidth = 18; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(ix - 26, iy - 130); ctx.quadraticCurveTo(hx + 10, iy - 95, hx - 30, iy - 62); ctx.stroke();
+    ctx.fillStyle = "#e8b48a"; ctx.strokeStyle = "#1a1020"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(hx - 30, iy - 62, 10, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.restore();
+    for (let i = 0; i < 5; i++){ const k = (t * 0.8 + i * 0.2) % 1; rotulo("♥", (hx + ix) / 2 - 40 + i * 20, iy - 200 - k * 80, 18, "#ff4d6d"); }
+    rotulo("ABRAÇO HISTÓRICO!", (hx + ix) / 2, iy - 300, 22, "#d9f23a");
+  }
+  if (fi >= 2.4 && fi < 3.4){ trofeu(hx + 44, LH*0.5 - 150 - Math.abs(Math.sin(t*7))*16, 1.3); }
+  if (fi > 2.6 && fi < 3.4) rotulo("UHUUL!", hx - 10, LH*0.5 - 205, 22, "#d9f23a");
 }
 
 /* ================== DESENHO: TELA INICIAL ================== */
