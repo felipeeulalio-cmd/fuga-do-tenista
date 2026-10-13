@@ -214,6 +214,11 @@ canvas#tela{position:absolute;inset:0;width:100%;height:100%;display:block;touch
       <div class="pista" id="pistaTexto"></div>
       <p class="aviso" id="pistaBonus"></p>
     </div>
+    <div class="cartao">
+      <h2>🏆 Ranking da galera</h2>
+      <p id="pistaPosicao" style="font-weight:900"></p>
+      <table class="ranking" id="tabelaPista"><tbody></tbody></table>
+    </div>
     <button class="btn" id="btnContinuar">PRÓXIMA FASE</button>
   </section>
 
@@ -528,6 +533,7 @@ const Ranking = {
       const c = document.createElement("td"); c.textContent = Number(r.pontos).toLocaleString("pt-BR");
       tr.append(a, b, c); tb.appendChild(tr);
     });
+    return lista;
     if (avisoId) $(avisoId).textContent = online ? "Ranking online da galera (atualiza a cada partida)." : "Ranking deste aparelho. O ranking online é ativado quando o jogo é publicado com a planilha.";
   }
 };
@@ -704,6 +710,12 @@ function mostrarPista(bonus, extra){
   $("pistaBonus").textContent = "+" + bonus.toLocaleString("pt-BR") + " pontos de bônus da fase" + (extra ? " · " + extra : "");
   $("btnContinuar").textContent = faltam ? "PRÓXIMA FASE" : "IR AO ENCONTRO!";
   mostrar("telaPista"); atualizarHUD();
+  $("pistaPosicao").textContent = "Carregando ranking…";
+  Ranking.render("tabelaPista").then(lista => {
+    const pts = Math.floor(estado.pontos);
+    const pos = (lista || []).filter(r => Number(r.pontos) > pts && String(r.nome).toLowerCase() !== estado.nome.toLowerCase()).length + 1;
+    $("pistaPosicao").textContent = "Seus pontos até agora: " + pts.toLocaleString("pt-BR") + " · você estaria em " + pos + "º lugar. Continue!";
+  });
 }
 function perderVida(tipo){
   if (jog.invuln > 0 || jog.morto) return;
