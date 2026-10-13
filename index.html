@@ -21,9 +21,11 @@
   --corpo:"Rubik",system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:dark;
 }
-html,body{height:100%;margin:0;background:var(--noite);color:var(--tinta);overflow:hidden;overscroll-behavior:none}
+html,body{height:100%;margin:0;color:var(--tinta);overflow:hidden;overscroll-behavior:none}
 body{font-family:var(--corpo);-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:none}
-#jogo{position:fixed;inset:0;overflow:hidden}
+#jogo{position:fixed;top:0;bottom:0;left:0;right:0;margin:0 auto;width:min(100vw, calc(100vh * 0.62));overflow:hidden;box-shadow:0 0 0 2px rgba(255,255,255,.08),0 0 80px rgba(0,0,0,.6)}
+html{background:radial-gradient(circle at 50% 30%,#2a1450,#0a0716 70%)}
+body{background:transparent}
 canvas#tela{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 [hidden]{display:none!important}
 
@@ -80,6 +82,8 @@ canvas#tela{position:absolute;inset:0;width:100%;height:100%;display:block;touch
 .nivel strong{display:block;font-family:var(--display);font-size:15px;letter-spacing:.02em;text-shadow:0 2px 0 rgba(0,0,0,.3)}
 .nivel small{display:block;font-size:12.5px;font-weight:700;opacity:.95;margin-top:2px}
 .nivel .vid{font-size:12px;font-weight:900;margin-top:3px;letter-spacing:1px}
+.nivel .lado{display:flex;flex-direction:column;align-items:center;gap:6px}
+.nivel .dif{font-family:var(--display);font-size:11px;letter-spacing:.06em;background:rgba(0,0,0,.45);border:2px solid #fff;border-radius:99px;padding:3px 8px;white-space:nowrap}
 .nivel .mult{font-family:var(--display);font-size:22px;background:#fff;color:#14102a;border-radius:12px;padding:6px 9px;transform:rotate(4deg)}
 .jogos{display:flex;flex-direction:column;gap:8px}
 .jogo{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;border:3px solid #221a10;border-radius:12px;background:#fff;padding:9px 11px;font:700 14px var(--corpo);color:#221a10;cursor:pointer}
@@ -324,10 +328,10 @@ const CABECA_ANCORA = {
 let VIDAS_MAX = 5;
 /* Níveis de dificuldade: quanto mais difícil, mais pontos no ranking */
 const NIVEIS = [
-  { id:"tio", emoji:"🍖", nome:"TIO DO CHURRASCO", frase:"Corre devagar, mas não larga o espetinho.", mult:1, vidas:6, vel:0.85, dupla:0, cor:"#22c55e" },
-  { id:"fds", emoji:"🎾", nome:"TENISTA DE FIM DE SEMANA", frase:"Joga sábado, reclama do joelho no domingo.", mult:1.5, vidas:5, vel:1, dupla:0.05, cor:"#3b82f6" },
-  { id:"supoe", emoji:"🤔", nome:"DANIEL SUPÕE QUE AGUENTA", frase:"Ele supõe que é fácil. Ele supõe errado.", mult:2, vidas:4, vel:1.18, dupla:0.15, cor:"#f59e0b" },
-  { id:"raiz", emoji:"🔥", nome:"SOLTEIRO RAIZ", frase:"Pretendentes na cola e casamento relâmpago: se casar, perde TODAS as vidas!", mult:3, vidas:3, vel:1.35, dupla:0.3, cor:"#ef4444" }
+  { id:"tio", emoji:"🍖", nome:"TIOZÃO DO CHURRASCO", dif:"FÁCIL", frase:"Ele faz churrasco e reclama de política.", mult:1, vidas:6, vel:0.85, dupla:0, cor:"#22c55e" },
+  { id:"fds", emoji:"🎾", nome:"TENISTA", dif:"MÉDIO", frase:"Joga tênis todos os dias até as 23h e reclama da quadra.", mult:1.5, vidas:5, vel:1, dupla:0.05, cor:"#3b82f6" },
+  { id:"supoe", emoji:"🤔", nome:"DANIEL SUPÕE QUE AGUENTA", dif:"DIFÍCIL", frase:"Ele supõe que é fácil. Ele supõe errado.", mult:2, vidas:4, vel:1.18, dupla:0.15, cor:"#f59e0b" },
+  { id:"raiz", emoji:"🔥", nome:"SOLTEIRO RAIZ", dif:"INSANO", frase:"Pretendentes na cola e casamento relâmpago: se casar, perde TODAS as vidas!", mult:3, vidas:3, vel:1.35, dupla:0.3, cor:"#ef4444" }
 ];
 let NIVEL = NIVEIS[1];
 const FASES = [
@@ -383,7 +387,7 @@ let LH = 760, ESC = 1, DPR = 1;
 function redimensionar(){
   DPR = Math.min(window.devicePixelRatio || 1, 2);
   const w = cv.clientWidth || window.innerWidth, h = cv.clientHeight || window.innerHeight;
-  ESC = w / LW; LH = Math.max(560, h / ESC);
+  ESC = w / LW; LH = Math.max(600, h / ESC);
   cv.width = Math.round(w * DPR); cv.height = Math.round(h * DPR);
   ctx.setTransform(DPR * ESC, 0, 0, DPR * ESC, 0, 0);
 }
@@ -634,8 +638,11 @@ function abrirNiveis(){
     const sm = document.createElement("small"); sm.textContent = nv.frase;
     const vd = document.createElement("span"); vd.className = "vid"; vd.textContent = "♥".repeat(nv.vidas) + "  ·  velocidade " + (nv.vel < 0.95 ? "tranquila" : nv.vel < 1.1 ? "normal" : nv.vel < 1.3 ? "rápida" : "insana");
     m.append(st, sm, vd);
+    const lado = document.createElement("span"); lado.className = "lado";
+    const dfc = document.createElement("span"); dfc.className = "dif"; dfc.textContent = nv.dif;
     const x = document.createElement("span"); x.className = "mult"; x.textContent = "x" + String(nv.mult).replace(".", ",");
-    b.append(e, m, x);
+    lado.append(dfc, x);
+    b.append(e, m, lado);
     b.onclick = () => { NIVEL = nv; VIDAS_MAX = nv.vidas; salvar("fuga_nivel", nv.id); Som.efeito("trofeu"); novoJogo(); };
     box.appendChild(b);
   });
